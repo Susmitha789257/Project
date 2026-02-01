@@ -1,0 +1,118 @@
+Frontend
+
+sudo apt update
+sudo apt install nginx -y
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+sudo rm -rf /var/www/html/*
+sudo cp -r ./frontend/* /var/www/html/
+
+sudo chown -R www-data:www-data /var/www/html
+sudo chmod -R 755 /var/www/html
+
+sudo systemctl restart nginx
+
+/var/www/html/
+├── index.html
+├── register.html
+├── welcome.html
+├── css/
+│   └── style.css
+├── js/
+│   └── main.js
+
+
+vi /etc/nginx/sites-available/default
+sudo nginx -t
+sudo systemctl restart nginx
+curl -X POST http://localhost/api/register/
+-------------------------------------------------------------------------------------------------
+Backend
+
+sudo apt update
+sudo apt install python3 python3-venv python3-pip -y
+cd backend
+
+python3 -m venv venv
+source venv/bin/activate
+
+pip install django gunicorn
+
+gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+
+curl -X POST http://localhost:8000/api/register/
+curl -X POST http://localhost:8000/api/login/
+
+-----------if anything breaks----------
+cd backend
+source venv/bin/activate
+gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+
+------------------automate gunicorn------------------------
+
+vi /etc/systemd/system/gunicorn.service
+source venv/bin/activate
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl enable gunicorn
+sudo systemctl start gunicorn
+sudo systemctl status gunicorn
+--------verify socket--------
+sudo mkdir -p /run/gunicorn
+ls -l /run/gunicorn.sock
+sudo chown ubuntu:www-data /run/gunicorn
+sudo chmod 755 /run/gunicorn
+
+-------------nginx setup-----------
+sudo apt update
+sudo apt install nginx -y
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+vi /etc/nginx/sites-available/default
+sudo nginx -t
+sudo systemctl restart nginx
+curl -X POST http://localhost/api/register/
+
+
+------MYSQL------BACKEND------
+sudo apt update
+sudo apt install mysql-server -y
+sudo systemctl status MySQL
+sudo mysql
+CREATE DATABASE simple_app_db;
+CREATE USER 'appuser'@'localhost' IDENTIFIED BY 'StrongPass@123';
+GRANT ALL PRIVILEGES ON simple_app_db.* TO 'appuser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
+sudo apt update
+sudo apt install -y   default-libmysqlclient-dev   build-essential   pkg-config   python3-dev
+pip install mysqlclient
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'simple_app_db',
+        'USER': 'appuser',
+        'PASSWORD': 'StrongPass@123',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
+
+python manage.py migrate
+
+sudo systemctl restart gunicorn
+sudo systemctl restart nginx
+
+sudo mysql
+USE simple_app_db;
+SELECT * FROM users_user;
+
+curl -X POST http://localhost/api/register/ \
+-H "Content-Type: application/json" \
+-d '{"username":"test1","password":"test1"}'
+---------------------------------------------------------------------------------------------------
+
