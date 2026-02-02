@@ -5,11 +5,22 @@ After=network.target
 [Service]
 User=ubuntu
 Group=www-data
+
 WorkingDirectory=/home/ubuntu/Project/backend
+
+Environment="PATH=/home/ubuntu/Project/backend/venv/bin"
+
+# Create /run/gunicorn automatically (IMPORTANT)
+RuntimeDirectory=gunicorn
+RuntimeDirectoryMode=0755
+
 ExecStart=/home/ubuntu/Project/backend/venv/bin/gunicorn \
           --workers 3 \
           --bind unix:/run/gunicorn/gunicorn.sock \
           backend.wsgi:application
+
+Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target

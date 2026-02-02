@@ -1,5 +1,5 @@
 Frontend
-
+git clone https://github.com/Susmitha789257/Project.git
 sudo apt update
 sudo apt install nginx -y
 sudo systemctl start nginx
@@ -47,7 +47,6 @@ curl -X POST http://localhost:8000/api/login/
 -----------if anything breaks----------
 cd backend
 source venv/bin/activate
-gunicorn backend.wsgi:application --bind 0.0.0.0:8000
 
 ------------------automate gunicorn------------------------
 
@@ -60,10 +59,8 @@ sudo systemctl start gunicorn
 sudo systemctl status gunicorn
 --------verify socket--------
 sudo mkdir -p /run/gunicorn
-ls -l /run/gunicorn.sock
 sudo chown ubuntu:www-data /run/gunicorn
 sudo chmod 755 /run/gunicorn
-
 -------------nginx setup-----------
 sudo apt update
 sudo apt install nginx -y
@@ -79,7 +76,7 @@ curl -X POST http://localhost/api/register/
 ------MYSQL------BACKEND------
 sudo apt update
 sudo apt install mysql-server -y
-sudo systemctl status MySQL
+sudo systemctl status mysql
 sudo mysql
 CREATE DATABASE simple_app_db;
 CREATE USER 'appuser'@'localhost' IDENTIFIED BY 'StrongPass@123';
@@ -94,10 +91,10 @@ pip install mysqlclient
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'simple_app_db',
-        'USER': 'appuser',
-        'PASSWORD': 'StrongPass@123',
-        'HOST': 'localhost',
+        'NAME': 'jobportal',
+        'USER': 'susmitha',
+        'PASSWORD': 'Susmitha789',
+        'HOST': 'mysql-database-3a.c9oyyoe2k8ry.ap-northeast-3.rds.amazonaws.com',
         'PORT': '3306',
     }
 }
@@ -111,8 +108,12 @@ sudo mysql
 USE simple_app_db;
 SELECT * FROM users_user;
 
+gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+
 curl -X POST http://localhost/api/register/ \
 -H "Content-Type: application/json" \
 -d '{"username":"test1","password":"test1"}'
+
+mysql -h mysql-database-3a.c9oyyoe2k8ry.ap-northeast-3.rds.amazonaws.com -P 3306 -u susmitha -p
 ---------------------------------------------------------------------------------------------------
 
