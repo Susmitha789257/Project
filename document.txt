@@ -114,6 +114,9 @@ curl -X POST http://localhost/api/register/ \
 -H "Content-Type: application/json" \
 -d '{"username":"test1","password":"test1"}'
 
-mysql -h mysql-database-3a.c9oyyoe2k8ry.ap-northeast-3.rds.amazonaws.com -P 3306 -u susmitha -p
+mysql -h db.internal.usmitha.org -P 3306 -u susmitha -p
 ---------------------------------------------------------------------------------------------------
-
+cd /home/ubuntu/Project/backend
+source venv/bin/activate
+python3 manage.py migrate
+sudo systemctl restart gunicorn
